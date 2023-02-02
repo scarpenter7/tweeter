@@ -15,6 +15,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class RegisterPresenter implements UserService.RegisterObserver{
+    //check out this cool comment
     View view;
     public RegisterPresenter(RegisterPresenter.View view) {
         this.view = view;
