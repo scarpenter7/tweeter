@@ -44,8 +44,6 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-
-
     private User user;
 
     private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
