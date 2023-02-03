@@ -15,7 +15,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowerService {
+public class FollowersService {
 
     public interface Observer {
 
@@ -23,7 +23,7 @@ public class FollowerService {
 
         void displayException(Exception exception);
 
-        void addFollowees(List<User> followees, boolean hasMorePages);
+        void addFollowers(List<User> followers, boolean hasMorePages);
     }
 
     public void loadMoreItems(User user, int pageSize, User lastFollower, Observer observer) {
@@ -35,7 +35,7 @@ public class FollowerService {
 
     private class GetFollowersHandler extends Handler {
 
-        private FollowerService.Observer observer;
+        private FollowersService.Observer observer;
         public GetFollowersHandler(Observer observer) {
             super(Looper.getMainLooper());
             this.observer = observer;
@@ -49,7 +49,7 @@ public class FollowerService {
             if (success) {
                 List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
-                observer.addFollowees(followers, hasMorePages);
+                observer.addFollowers(followers, hasMorePages);
             } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowersTask.MESSAGE_KEY);
                 observer.displayError("Failed to get followers: " + message);

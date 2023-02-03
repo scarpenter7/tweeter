@@ -135,7 +135,7 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(), // need to move later!!!
+                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(), //TODO need to move later!!!
                             userAlias.getText().toString(), new GetUserHandler());
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     executor.execute(getUserTask);
@@ -311,8 +311,6 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
         private void removeLoadingFooter() {
             removeItem(users.get(users.size() - 1));
         }
-
-
 
     }
 

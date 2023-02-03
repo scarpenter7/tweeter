@@ -7,6 +7,12 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetFollowingPresenter {
     private static final int PAGE_SIZE = 10;
+    private View view;
+    private FollowService followService;
+    private User lastFollowee;
+    private boolean hasMorePages;
+    private boolean isLoading = false;
+
     public interface View {
         void setLoadingFooter(boolean value);
         void displayMessage(String message);
@@ -14,15 +20,6 @@ public class GetFollowingPresenter {
         void addMoreItems(List<User> followees);
     }
 
-    private View view;
-
-    private FollowService followService;
-    private User lastFollowee;
-    private boolean hasMorePages;
-
-
-
-    private boolean isLoading = false;
     public GetFollowingPresenter(View view) {
         this.view = view;
         this.followService = new FollowService();
