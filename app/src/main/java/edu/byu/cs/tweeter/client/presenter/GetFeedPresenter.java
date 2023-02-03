@@ -15,6 +15,14 @@ public class GetFeedPresenter {
     private boolean hasMorePages;
     private boolean isLoading = false;
 
+    public boolean isloading() {
+        return isLoading;
+    }
+
+    public boolean hasMorePages() {
+        return hasMorePages;
+    }
+
     public interface View {
         void setLoadingFooter(boolean value);
         void displayMessage(String message);
@@ -55,7 +63,7 @@ public class GetFeedPresenter {
         }
 
         @Override
-        public void addStatuses(List<Status> statuses, boolean hasMorePages) {
+        public void addItems(List<Status> statuses, boolean hasMorePages) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
