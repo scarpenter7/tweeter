@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -15,8 +16,9 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetUserHandler extends Handler { // TODO move to User Service
     UserService.GetUserObserver observer;
-    public GetUserHandler() {
+    public GetUserHandler(UserService.GetUserObserver observer) {
         super(Looper.getMainLooper());
+        this.observer = observer;
     }
 
     @Override

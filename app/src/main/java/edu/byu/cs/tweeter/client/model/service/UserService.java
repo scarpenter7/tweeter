@@ -77,9 +77,9 @@ public class UserService {
 
     }
 
-    public void getUser(String username) {
+    public void getUser(String username, GetUserObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                username, new GetUserHandler());
+                username, new GetUserHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getUserTask);
     }

@@ -47,10 +47,6 @@ public class LoginPresenter implements UserService.LoginObserver {
     }
 
     public String validateLogin(String username, String password) {
-        System.out.println("CHECK OUT MY DOPE DEBUGGING SKILLZ");
-        System.out.println(password);
-        System.out.println(password.charAt(0));
-        System.out.println(password.charAt(0) != '@');
         if (username.length() > 0 && username.charAt(0) != '@') {
             return "Alias must begin with @.";
         }

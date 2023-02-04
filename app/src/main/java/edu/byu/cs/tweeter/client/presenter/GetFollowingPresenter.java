@@ -72,7 +72,7 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
     }
 
     public void getUser(String username) {
-        userService.getUser(username);
+        userService.getUser(username, this);
 
     }
 
