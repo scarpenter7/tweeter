@@ -1,10 +1,8 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 

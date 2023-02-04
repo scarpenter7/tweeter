@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             followButton.setVisibility(View.GONE);
         } else {
             followButton.setVisibility(View.VISIBLE);
-            IsFollowerTask isFollowerTask = new IsFollowerTask(Cache.getInstance().getCurrUserAuthToken(),
+            IsFollowerTask isFollowerTask = new IsFollowerTask(Cache.getInstance().getCurrUserAuthToken(), //TODO move to Follow service
                     Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerHandler());
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(isFollowerTask);
@@ -124,14 +124,14 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 followButton.setEnabled(false);
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
+                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(), //TODO move Follow service
                             selectedUser, new UnfollowHandler());
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     executor.execute(unfollowTask);
 
                     Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 } else {
-                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
+                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(), //TODO move Follow service
                             selectedUser, new FollowHandler());
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     executor.execute(followTask);
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
             logOutToast.show();
 
-            LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler());
+            LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler()); //TODO move Login service
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(logoutTask);
 
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         //Clear everything so that the main activity is recreated with the login page.
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //Clear user data (cached data).
-        Cache.getInstance().clearCache();
+        Cache.getInstance().clearCache(); // TODO Login Presenter
         startActivity(intent);
     }
 
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
         try {
             Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), System.currentTimeMillis(), parseURLs(post), parseMentions(post));
-            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
+            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(), // TODO Story Service
                     newStatus, new PostStatusHandler());
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(statusTask);
@@ -192,14 +192,14 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-    public String getFormattedDateTime() throws ParseException {
+    public String getFormattedDateTime() throws ParseException { //TODO move to user service
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
 
         return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
     }
 
-    public List<String> parseURLs(String post) {
+    public List<String> parseURLs(String post) { //TODO move to user service
         List<String> containedUrls = new ArrayList<>();
         for (String word : post.split("\\s")) {
             if (word.startsWith("http://") || word.startsWith("https://")) {
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         return containedUrls;
     }
 
-    public List<String> parseMentions(String post) {
+    public List<String> parseMentions(String post) { //TODO move to user service
         List<String> containedMentions = new ArrayList<>();
 
         for (String word : post.split("\\s")) {
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         return containedMentions;
     }
 
-    public int findUrlEndIndex(String word) {
+    public int findUrlEndIndex(String word) { //TODO move to user service
         if (word.contains(".com")) {
             int index = word.indexOf(".com");
             index += 4;
@@ -260,12 +260,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
         // Get count of most recently selected user's followers.
-        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
+        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(), //TODO move
                 selectedUser, new GetFollowersCountHandler());
         executor.execute(followersCountTask);
 
         // Get count of most recently selected user's followees (who they are following)
-        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
+        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(), //TODO move
                 selectedUser, new GetFollowingCountHandler());
         executor.execute(followingCountTask);
     }
@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     // LogoutHandler
 
-    private class LogoutHandler extends Handler {
+    private class LogoutHandler extends Handler { //TODO need to move to user service
 
         public LogoutHandler() {
             super(Looper.getMainLooper());
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     // GetFollowersCountHandler
 
-    private class GetFollowersCountHandler extends Handler {
+    private class GetFollowersCountHandler extends Handler { //TODO move to follow service (merge follower and follow services)
 
         public GetFollowersCountHandler() {
             super(Looper.getMainLooper());
@@ -330,9 +330,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-    // GetFollowingCountHandler
 
-    private class GetFollowingCountHandler extends Handler {
+    private class GetFollowingCountHandler extends Handler { //TODO move to follow service (merge follower and follow services)
 
         public GetFollowingCountHandler() {
             super(Looper.getMainLooper());
@@ -356,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     // IsFollowerHandler
 
-    private class IsFollowerHandler extends Handler {
+    private class IsFollowerHandler extends Handler { //TODO move to follow service (merge follower and follow services)
 
         public IsFollowerHandler() {
             super(Looper.getMainLooper());
@@ -389,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     // FollowHandler
 
-    private class FollowHandler extends Handler {
+    private class FollowHandler extends Handler { //TODO move to follow service (merge follower and follow services)
 
         public FollowHandler() {
             super(Looper.getMainLooper());
@@ -415,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     // UnfollowHandler
 
-    private class UnfollowHandler extends Handler {
+    private class UnfollowHandler extends Handler { //TODO move to follow service (merge follower and follow services)
 
         public UnfollowHandler() {
             super(Looper.getMainLooper());
@@ -441,7 +440,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     // PostStatusHandler
 
-    private class PostStatusHandler extends Handler {
+    private class PostStatusHandler extends Handler { //TODO move to status service (merge story and feed services)
 
         public PostStatusHandler() {
             super(Looper.getMainLooper());
