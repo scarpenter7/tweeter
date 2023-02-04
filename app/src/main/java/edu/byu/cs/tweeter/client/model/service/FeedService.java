@@ -53,9 +53,6 @@ public class FeedService {
             if (success) {
                 List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
                 boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-
-                //lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-
                 observer.addItems(statuses, hasMorePages);
             } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
