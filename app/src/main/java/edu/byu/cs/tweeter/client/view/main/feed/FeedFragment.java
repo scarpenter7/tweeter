@@ -34,7 +34,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.R;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.GetFeedPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
@@ -57,6 +56,10 @@ public class FeedFragment extends Fragment implements GetFeedPresenter.View {
     private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
 
     private GetFeedPresenter presenter;
+
+    private Toast getUserToast;
+
+    private TextView errorView;
 
     /**
      * Creates an instance of the fragment and places the target user in an arguments
@@ -119,6 +122,24 @@ public class FeedFragment extends Fragment implements GetFeedPresenter.View {
         feedRecyclerViewAdapter.addItems(statuses);
     }
 
+    @Override
+    public void getUserSuccessful(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
+    @Override
+    public void displayErrorMessage(String message) {
+        getUserToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+        getUserToast.show();
+    }
+
+    @Override
+    public void displayInfoMessage(String message) {
+        errorView.setText(message);
+    }
+
     /**
      * The ViewHolder for the RecyclerView that displays the feed data.
      */
@@ -147,10 +168,7 @@ public class FeedFragment extends Fragment implements GetFeedPresenter.View {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(), //TODO need to move later!!!
-                            userAlias.getText().toString(), new GetUserHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(getUserTask);
+                    presenter.getUser(userAlias.getText().toString());
                     Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                 }
             });
@@ -181,11 +199,7 @@ public class FeedFragment extends Fragment implements GetFeedPresenter.View {
                         int end = s.getSpanEnd(this);
 
                         String clickable = s.subSequence(start, end).toString();
-
-                        GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                                clickable, new GetUserHandler());
-                        ExecutorService executor = Executors.newSingleThreadExecutor();
-                        executor.execute(getUserTask);
+                        presenter.getUser(clickable);
                         Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
                     }
 
@@ -207,36 +221,6 @@ public class FeedFragment extends Fragment implements GetFeedPresenter.View {
             post.setClickable(true);
             post.setMovementMethod(LinkMovementMethod.getInstance());
         }
-
-        /**
-         * Message handler (i.e., observer) for GetUserTask.
-         */
-
-        private class GetUserHandler extends Handler {
-
-            public GetUserHandler() {
-                super(Looper.getMainLooper());
-            }
-
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-                if (success) {
-                    User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-                    startActivity(intent);
-                } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                    String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile: " + message, Toast.LENGTH_LONG).show();
-                } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                    Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                    Toast.makeText(getContext(), "Failed to get user's profile because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
     }
 
     /**
