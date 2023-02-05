@@ -103,5 +103,15 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
             setHasMorePages(hasMorePages);
             view.addMoreItems(followers);
         }
+
+        @Override
+        public void isFollower() {
+            // don't use
+        }
+
+        @Override
+        public void isNotFollower() {
+            // don't use
+        }
     }
 }
