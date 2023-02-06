@@ -13,21 +13,24 @@ import java.util.concurrent.Executors;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.FollowHandler;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.UnfollowHandler;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
 
     public interface Observer {
 
-        void displayError(String message);
+        void displayFollowError(String message);
 
-        void displayException(Exception exception, String message);
+        void displayFollowException(Exception exception, String message);
 
         void addFollowees(List<User> followees, boolean hasMorePages);
 
         void follow();
+
+        void unfollow();
     }
     public void loadMoreItems(User user, int pageSize, User lastFollowee, Observer observer) {
         GetFollowingTask getFollowingTask = new GetFollowingTask(Cache.getInstance().getCurrUserAuthToken(),
@@ -41,6 +44,13 @@ public class FollowService {
                 user, new FollowHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(followTask);
+    }
+    
+    public void unfollow(User user, Observer observer) {
+        UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
+                user, new UnfollowHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(unfollowTask);
     }
 
     /**
@@ -65,10 +75,10 @@ public class FollowService {
                 observer.addFollowees(followees, hasMorePages);
             } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowingTask.MESSAGE_KEY);
-                observer.displayError("Failed to get following: " + message);
+                observer.displayFollowError("Failed to get following: " + message);
             } else if (msg.getData().containsKey(GetFollowingTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowingTask.EXCEPTION_KEY);
-                observer.displayException(ex, "Failed to get following because of exception: ");
+                observer.displayFollowException(ex, "Failed to get following because of exception: ");
             }
         }
     }

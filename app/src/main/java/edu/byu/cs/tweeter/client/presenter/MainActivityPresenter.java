@@ -19,6 +19,16 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     }
 
     @Override
+    public void displayFollowError(String message) {
+        view.displayFollowErrorMessage(message);
+    }
+
+    @Override
+    public void displayFollowException(Exception exception, String message) {
+        view.displayFollowException(exception, message);
+    }
+
+    @Override
     public void displayError(String message) {
         view.displayErrorMessage(message);
     }
@@ -27,6 +37,7 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     public void displayException(Exception exception, String message) {
         view.displayException(exception, message);
     }
+
 
     @Override
     public void addFollowees(List<User> followees, boolean hasMorePages) {
@@ -37,6 +48,12 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     public void follow() {
         view.follow();
     }
+
+    @Override
+    public void unfollow() {
+        view.unfollow();
+    }
+
 
     @Override
     public void addFollowers(List<User> followers, boolean hasMorePages) {
@@ -53,13 +70,17 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
         view.isNotFollower();
     }
 
+
     public interface View {
         void setLoadingFooter(boolean value);
         void displayErrorMessage(String message);
         void displayException(Exception exception, String message);
+        void displayFollowErrorMessage(String message);
+        void displayFollowException(Exception exception, String message);
         void isFollower();
         void isNotFollower();
         void follow();
+        void unfollow();
     }
 
 
@@ -69,5 +90,8 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
 
     public void follow(User user) {
         followService.follow(user, this);
+    }
+    public void unfollow(User selectedUser) {
+        followService.unfollow(selectedUser, this);
     }
 }

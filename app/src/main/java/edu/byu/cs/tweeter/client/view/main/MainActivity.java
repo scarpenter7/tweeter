@@ -123,16 +123,12 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 followButton.setEnabled(false);
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(), //TODO move Follow service
-                            selectedUser, new UnfollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(unfollowTask);
+                    presenter.unfollow(selectedUser);
+
 
                     Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 } else {
                     presenter.follow(selectedUser);
-
-
                     Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 }
             }
@@ -286,12 +282,24 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void displayErrorMessage(String message) {
-        Toast.makeText(MainActivity.this, "Failed to determine following relationship: " + message, Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void displayException(Exception exception, String message) {
         Toast.makeText(MainActivity.this, message + exception.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void displayFollowErrorMessage(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+        followButton.setEnabled(true);
+    }
+
+    @Override
+    public void displayFollowException(Exception exception, String message) {
+        Toast.makeText(MainActivity.this, message + exception.getMessage(), Toast.LENGTH_LONG).show();
+        followButton.setEnabled(true);
     }
 
     @Override
@@ -311,6 +319,13 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     public void follow() {
         updateSelectedUserFollowingAndFollowers();
         updateFollowButton(false);
+        followButton.setEnabled(true);
+    }
+
+    @Override
+    public void unfollow() {
+        updateSelectedUserFollowingAndFollowers();
+        updateFollowButton(true);
         followButton.setEnabled(true);
     }
 
@@ -382,32 +397,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowingCountTask.EXCEPTION_KEY);
                 Toast.makeText(MainActivity.this, "Failed to get following count because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
             }
-        }
-    }
-
-    // UnfollowHandler
-
-    private class UnfollowHandler extends Handler { //TODO move to follow service (merge follower and follow services)
-
-        public UnfollowHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
-            if (success) {
-                updateSelectedUserFollowingAndFollowers();
-                updateFollowButton(true);
-            } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to unfollow: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to unfollow because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            followButton.setEnabled(true);
         }
     }
 

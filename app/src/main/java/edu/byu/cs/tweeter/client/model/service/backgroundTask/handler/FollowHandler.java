@@ -3,13 +3,11 @@ package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.FollowTask;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
 public class FollowHandler extends Handler {
 
@@ -27,10 +25,10 @@ public class FollowHandler extends Handler {
             observer.follow();
         } else if (msg.getData().containsKey(FollowTask.MESSAGE_KEY)) {
             String message = msg.getData().getString(FollowTask.MESSAGE_KEY);
-            observer.displayError("Failed to follow: " + message);
+            observer.displayFollowError("Failed to follow: " + message);
         } else if (msg.getData().containsKey(FollowTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(FollowTask.EXCEPTION_KEY);
-            observer.displayException(ex, "Failed to follow because of exception: ");
+            observer.displayFollowException(ex, "Failed to follow because of exception: ");
         }
     }
 }

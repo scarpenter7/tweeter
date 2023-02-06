@@ -81,14 +81,14 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
         private boolean hasMorePages;
 
         @Override
-        public void displayError(String message) {
+        public void displayFollowError(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
             view.displayError(message);
         }
 
         @Override
-        public void displayException(Exception exception, String message) {
+        public void displayFollowException(Exception exception, String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
             view.displayException("Failed to get following because of exception: " + exception.getMessage());
@@ -105,6 +105,11 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
 
         @Override
         public void follow() {
+            // don't use
+        }
+
+        @Override
+        public void unfollow() {
             // don't use
         }
     }
