@@ -5,22 +5,27 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
+import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainActivityPresenter implements FollowersService.Observer, FollowService.Observer, UserService.LoginObserver {
+public class MainActivityPresenter
+        implements FollowersService.Observer, FollowService.Observer, UserService.LoginObserver, StoryService.Observer {
 
     private MainActivityPresenter.View view;
     private FollowersService followersService;
     private FollowService followService;
     private UserService userService;
+    private StoryService storyService;
 
     public MainActivityPresenter(View view) {
         this.view = view;
         this.followersService = new FollowersService();
         this.followService = new FollowService();
         this.userService = new UserService();
+        this.storyService = new StoryService();
     }
 
     @Override
@@ -34,13 +39,23 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     }
 
     @Override
-    public void displayError(String message) {
+    public void handleError(String message) {
         view.displayErrorMessage(message);
     }
 
     @Override
     public void handleException(Exception exception, String message) {
         view.displayException(exception, message);
+    }
+
+    @Override
+    public void addStories(List<Status> statuses, boolean hasMorePages) {
+        // do not use
+    }
+
+    @Override
+    public void postStatus() {
+        view.postStatus();
     }
 
 
@@ -57,6 +72,11 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     @Override
     public void unfollow() {
         view.unfollow();
+    }
+
+    @Override
+    public void getFolloweesCount(int count) {
+        view.getFolloweesCount(count);
     }
 
 
@@ -76,6 +96,11 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     }
 
     @Override
+    public void getFollowersCount(int count) {
+        view.getFollowersCount(count);
+    }
+
+    @Override
     public void handleLoginSuccess(User user, AuthToken authToken) {
         // do not use
     }
@@ -92,9 +117,8 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
 
     @Override
     public void handleLogoutFailure(String message) {
-        displayError(message);
+        handleError(message);
     }
-
 
     public interface View {
         void setLoadingFooter(boolean value);
@@ -107,6 +131,9 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
         void follow();
         void unfollow();
         void logout();
+        void postStatus();
+        void getFollowersCount(int count);
+        void getFolloweesCount(int count);
     }
 
 
@@ -126,4 +153,17 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
         //Clear user data (cached data).
         Cache.getInstance().clearCache();
     }
+
+    public void postStatus(Status newStatus) {
+        storyService.postStatus(newStatus, this);
+    }
+
+    public void getFollowersCount(User selectedUser) {
+        followersService.getFollowersCount(selectedUser, this);
+    }
+
+    public void getFolloweesCount(User selectedUser) {
+        followService.getFolloweesCount(selectedUser, this);
+    }
+
 }

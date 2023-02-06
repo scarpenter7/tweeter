@@ -81,17 +81,17 @@ public class GetStoryPresenter implements UserService.GetUserObserver {
 
     public class GetStoriesObserver implements StoryService.Observer {
         @Override
-        public void displayError(String message) {
+        public void handleError(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
             view.displayMessage(message);
         }
 
         @Override
-        public void displayException(Exception exception) {
+        public void handleException(Exception exception, String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayMessage("Failed to get story because of exception: " + exception.getMessage());
+            view.displayMessage(message + exception.getMessage());
         }
 
         @Override
@@ -101,6 +101,11 @@ public class GetStoryPresenter implements UserService.GetUserObserver {
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             setHasMorePages(hasMorePages);
             view.addMoreItems(statuses);
+        }
+
+        @Override
+        public void postStatus() {
+
         }
     }
 

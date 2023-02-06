@@ -3,7 +3,6 @@ package edu.byu.cs.tweeter.client.model.service;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -12,9 +11,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetStoryTask;
-import edu.byu.cs.tweeter.client.presenter.GetStoryPresenter;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.PostStatusTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.PostStatusHandler;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -22,11 +21,13 @@ public class StoryService {
 
     public interface Observer {
 
-        void displayError(String message);
+        void handleError(String message);
 
-        void displayException(Exception exception);
+        void handleException(Exception exception, String message);
 
         void addStories(List<Status> statuses, boolean hasMorePages);
+
+        void postStatus();
     }
 
     public void loadMoreItems(User user, int pageSize, Status lastStatus, Observer observer) {
@@ -34,6 +35,13 @@ public class StoryService {
                 user, pageSize, lastStatus, new StoryService.GetStoryHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getStoryTask);
+    }
+
+    public void postStatus(Status newStatus, Observer observer) {
+        PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
+                newStatus, new PostStatusHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(statusTask);
     }
 
     private class GetStoryHandler extends Handler {
@@ -54,10 +62,10 @@ public class StoryService {
                 observer.addStories(statuses, hasMorePages);
             } else if (msg.getData().containsKey(GetStoryTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetStoryTask.MESSAGE_KEY);
-                observer.displayError("Failed to get story: " + message);
+                observer.handleError("Failed to get story: " + message);
             } else if (msg.getData().containsKey(GetStoryTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetStoryTask.EXCEPTION_KEY);
-                observer.displayException(ex);
+                observer.handleException(ex, "Failed to get story due to exception: ");
             }
         }
     }

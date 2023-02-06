@@ -82,7 +82,7 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
         private boolean hasMorePages;
 
         @Override
-        public void displayError(String message) {
+        public void handleError(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
             view.displayMessage(message);
@@ -111,6 +111,11 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
 
         @Override
         public void isNotFollower() {
+            // don't use
+        }
+
+        @Override
+        public void getFollowersCount(int count) {
             // don't use
         }
     }

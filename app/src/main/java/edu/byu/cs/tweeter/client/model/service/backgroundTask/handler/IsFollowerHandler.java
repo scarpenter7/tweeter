@@ -30,7 +30,7 @@ public class IsFollowerHandler extends Handler {
             }
         } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
             String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
-            observer.displayError("Failed to determine following relationship: " + message);
+            observer.handleError("Failed to determine following relationship: " + message);
         } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
             observer.handleException(ex, "Failed to determine following relationship because of exception: ");

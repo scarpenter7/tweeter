@@ -32,7 +32,7 @@ public class RegisterPresenter implements UserService.RegisterObserver{
 
     @Override
     public void handleException(Exception exception) {
-        view.displayInfoMessage(exception.getMessage()); // TODO
+        view.displayInfoMessage(exception.getMessage());
     }
 
     public void initiateRegister(String firstName, String lastName, String username, String password,

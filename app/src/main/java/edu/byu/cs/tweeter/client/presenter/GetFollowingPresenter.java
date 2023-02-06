@@ -95,6 +95,16 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
         }
 
         @Override
+        public void handleError(String message) {
+
+        }
+
+        @Override
+        public void handleException(Exception exception, String message) {
+
+        }
+
+        @Override
         public void addFollowees(List<User> followees, boolean hasMorePages) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
@@ -110,6 +120,11 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
 
         @Override
         public void unfollow() {
+            // don't use
+        }
+
+        @Override
+        public void getFolloweesCount(int count) {
             // don't use
         }
     }
