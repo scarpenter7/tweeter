@@ -91,17 +91,21 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
         public void displayFollowException(Exception exception, String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayException("Failed to get following because of exception: " + exception.getMessage());
+            view.displayException(message + exception.getMessage());
         }
 
         @Override
         public void handleError(String message) {
-
+            isLoading = false;
+            view.setLoadingFooter(isLoading);
+            view.displayError(message);
         }
 
         @Override
         public void handleException(Exception exception, String message) {
-
+            isLoading = false;
+            view.setLoadingFooter(isLoading);
+            view.displayException(message + exception.getMessage());
         }
 
         @Override
