@@ -23,7 +23,7 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
 
     @Override
     public void handleFailure(String message) {
-        view.displayErrorMessage(message);
+        view.displayError(message);
     }
 
     @Override
@@ -34,13 +34,13 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
 
     public interface View {
         void setLoadingFooter(boolean value);
-        void displayMessage(String message);
+        void displayException(String message);
 
         void addMoreItems(List<User> followees);
 
         void getUserSuccessful(User user);
 
-        void displayErrorMessage(String message);
+        void displayError(String message);
 
         void displayInfoMessage(String message);
     }
@@ -84,14 +84,14 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
         public void displayError(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayMessage(message);
+            view.displayError(message);
         }
 
         @Override
-        public void displayException(Exception exception) {
+        public void displayException(Exception exception, String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayMessage("Failed to get following because of exception: " + exception.getMessage());
+            view.displayException("Failed to get following because of exception: " + exception.getMessage());
         }
 
         @Override
@@ -101,6 +101,11 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
             lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
             setHasMorePages(hasMorePages);
             view.addMoreItems(followees);
+        }
+
+        @Override
+        public void follow() {
+            // don't use
         }
     }
 }

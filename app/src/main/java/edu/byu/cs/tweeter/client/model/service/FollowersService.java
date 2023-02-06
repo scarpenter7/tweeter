@@ -24,7 +24,7 @@ public class FollowersService {
 
         void displayError(String message);
 
-        void displayException(Exception exception);
+        void displayException(Exception exception, String message);
 
         void addFollowers(List<User> followers, boolean hasMorePages);
 
@@ -69,7 +69,7 @@ public class FollowersService {
                 observer.displayError("Failed to get followers: " + message);
             } else if (msg.getData().containsKey(GetFollowersTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
-                observer.displayException(ex);
+                observer.displayException(ex, "Failed to get followers because of exception: ");
             }
         }
     }

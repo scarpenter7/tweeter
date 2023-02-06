@@ -89,10 +89,10 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
         }
 
         @Override
-        public void displayException(Exception exception) {
+        public void displayException(Exception exception, String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayMessage("Failed to get followers because of exception: " + exception.getMessage());
+            view.displayMessage(message + exception.getMessage());
         }
 
         @Override

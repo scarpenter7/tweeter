@@ -3,15 +3,11 @@ package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.IsFollowerTask;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
 public class IsFollowerHandler extends Handler {
     FollowersService.Observer observer;
@@ -37,7 +33,7 @@ public class IsFollowerHandler extends Handler {
             observer.displayError("Failed to determine following relationship: " + message);
         } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
-            observer.displayException(ex);
+            observer.displayException(ex, "Failed to determine following relationship because of exception: ");
         }
     }
 }

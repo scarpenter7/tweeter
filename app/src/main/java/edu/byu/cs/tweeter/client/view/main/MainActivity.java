@@ -130,10 +130,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
                     Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 } else {
-                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(), //TODO move Follow service
-                            selectedUser, new FollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(followTask);
+                    presenter.follow(selectedUser);
+
 
                     Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 }
@@ -292,8 +290,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     @Override
-    public void displayException(Exception exception) {
-        Toast.makeText(MainActivity.this, "Failed to get followers count because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+    public void displayException(Exception exception, String message) {
+        Toast.makeText(MainActivity.this, message + exception.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -307,6 +305,13 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     public void isNotFollower() {
         followButton.setText(R.string.follow);
         followButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+    }
+
+    @Override
+    public void follow() {
+        updateSelectedUserFollowingAndFollowers();
+        updateFollowButton(false);
+        followButton.setEnabled(true);
     }
 
     // LogoutHandler
@@ -377,32 +382,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowingCountTask.EXCEPTION_KEY);
                 Toast.makeText(MainActivity.this, "Failed to get following count because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
             }
-        }
-    }
-
-    // FollowHandler
-
-    private class FollowHandler extends Handler { //TODO move to follow service (merge follower and follow services)
-
-        public FollowHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(FollowTask.SUCCESS_KEY);
-            if (success) {
-                updateSelectedUserFollowingAndFollowers();
-                updateFollowButton(false);
-            } else if (msg.getData().containsKey(FollowTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(FollowTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to follow: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(FollowTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(FollowTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to follow because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            followButton.setEnabled(true);
         }
     }
 

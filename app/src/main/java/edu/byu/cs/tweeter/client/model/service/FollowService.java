@@ -11,7 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.FollowHandler;
+import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
@@ -20,15 +23,24 @@ public class FollowService {
 
         void displayError(String message);
 
-        void displayException(Exception exception);
+        void displayException(Exception exception, String message);
 
         void addFollowees(List<User> followees, boolean hasMorePages);
+
+        void follow();
     }
     public void loadMoreItems(User user, int pageSize, User lastFollowee, Observer observer) {
         GetFollowingTask getFollowingTask = new GetFollowingTask(Cache.getInstance().getCurrUserAuthToken(),
                 user, pageSize, lastFollowee, new GetFollowingHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowingTask);
+    }
+
+    public void follow(User user, Observer observer) {
+        FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
+                user, new FollowHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(followTask);
     }
 
     /**
@@ -56,7 +68,7 @@ public class FollowService {
                 observer.displayError("Failed to get following: " + message);
             } else if (msg.getData().containsKey(GetFollowingTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowingTask.EXCEPTION_KEY);
-                observer.displayException(ex);
+                observer.displayException(ex, "Failed to get following because of exception: ");
             }
         }
     }

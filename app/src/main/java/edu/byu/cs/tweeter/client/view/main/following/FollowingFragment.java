@@ -99,7 +99,7 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
     }
 
     @Override
-    public void displayMessage(String message) {
+    public void displayException(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
@@ -116,7 +116,7 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
     }
 
     @Override
-    public void displayErrorMessage(String message) {
+    public void displayError(String message) {
         getUserToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
         getUserToast.show();
     }
