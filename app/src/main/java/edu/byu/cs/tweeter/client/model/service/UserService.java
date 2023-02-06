@@ -1,15 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;// edu.byu.cs.tweeter.client.model.service.UserService.java
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
@@ -19,25 +10,24 @@ import java.util.concurrent.Executors;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.LoginTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetUserHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.LoginHandler;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.LogoutHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.RegisterHandler;
-import edu.byu.cs.tweeter.client.presenter.RegisterPresenter;
-import edu.byu.cs.tweeter.client.view.login.LoginFragment;
-import edu.byu.cs.tweeter.client.view.login.RegisterFragment;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService {
 
-
-
     public interface LoginObserver {
-        void handleSuccess(User user, AuthToken authToken);
-        void handleFailure(String message);
-        void handleException(Exception exception);
+        void handleLoginSuccess(User user, AuthToken authToken);
+        void handleLoginFailure(String message);
+        void handleLogoutSuccess();
+        void handleLogoutFailure(String message);
+        void handleException(Exception exception, String message);
     }
 
     public interface RegisterObserver {
@@ -74,6 +64,13 @@ public class UserService {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(registerTask);
+
+    }
+
+    public void logout(LoginObserver observer) {
+        LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(logoutTask);
 
     }
 

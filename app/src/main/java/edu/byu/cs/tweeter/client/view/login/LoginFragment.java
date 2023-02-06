@@ -71,7 +71,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
     }
 
     @Override
-    public void displayInfoMessage(String message) {
+    public void displayMessage(String message) {
         loginToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
         loginToast.show();
     }
@@ -79,7 +79,12 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
     @Override
     public void displayErrorMessage(String message) {
         errorView.setText(message);
+    }
 
+    @Override
+    public void displayException(Exception exception, String message) {
+        loginToast = Toast.makeText(getContext(), message + exception.getMessage(), Toast.LENGTH_LONG);
+        loginToast.show();
     }
 
     @Override

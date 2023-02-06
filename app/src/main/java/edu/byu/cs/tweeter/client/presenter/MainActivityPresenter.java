@@ -2,20 +2,25 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainActivityPresenter implements FollowersService.Observer, FollowService.Observer {
+public class MainActivityPresenter implements FollowersService.Observer, FollowService.Observer, UserService.LoginObserver {
 
     private MainActivityPresenter.View view;
     private FollowersService followersService;
     private FollowService followService;
+    private UserService userService;
 
     public MainActivityPresenter(View view) {
         this.view = view;
         this.followersService = new FollowersService();
         this.followService = new FollowService();
+        this.userService = new UserService();
     }
 
     @Override
@@ -34,7 +39,7 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     }
 
     @Override
-    public void displayException(Exception exception, String message) {
+    public void handleException(Exception exception, String message) {
         view.displayException(exception, message);
     }
 
@@ -70,6 +75,26 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
         view.isNotFollower();
     }
 
+    @Override
+    public void handleLoginSuccess(User user, AuthToken authToken) {
+        // do not use
+    }
+
+    @Override
+    public void handleLoginFailure(String message) {
+        // do not use
+    }
+
+    @Override
+    public void handleLogoutSuccess() {
+        view.logout();
+    }
+
+    @Override
+    public void handleLogoutFailure(String message) {
+        displayError(message);
+    }
+
 
     public interface View {
         void setLoadingFooter(boolean value);
@@ -81,6 +106,7 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
         void isNotFollower();
         void follow();
         void unfollow();
+        void logout();
     }
 
 
@@ -93,5 +119,11 @@ public class MainActivityPresenter implements FollowersService.Observer, FollowS
     }
     public void unfollow(User selectedUser) {
         followService.unfollow(selectedUser, this);
+    }
+
+    public void logout() {
+        userService.logout(this);
+        //Clear user data (cached data).
+        Cache.getInstance().clearCache();
     }
 }

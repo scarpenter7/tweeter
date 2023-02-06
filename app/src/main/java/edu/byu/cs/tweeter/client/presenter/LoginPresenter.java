@@ -13,30 +13,42 @@ public class LoginPresenter implements UserService.LoginObserver {
 
 
     @Override
-    public void handleSuccess(User user, AuthToken authToken) {
+    public void handleLoginSuccess(User user, AuthToken authToken) {
         view.loginSuccessful(user, authToken);
     }
 
     @Override
-    public void handleFailure(String message) {
+    public void handleLoginFailure(String message) {
         view.displayErrorMessage(message);
     }
 
     @Override
-    public void handleException(Exception exception) {
-        view.displayInfoMessage(exception.getMessage()); // TODO
+    public void handleLogoutSuccess() {
+        // don't use
+    }
+
+    @Override
+    public void handleLogoutFailure(String message) {
+        // don't use
+    }
+
+    @Override
+    public void handleException(Exception exception, String message) {
+        view.displayException(exception, message);
+
     }
 
     public interface View {
-        public void displayInfoMessage(String message);
+        public void displayMessage(String message);
         public void displayErrorMessage(String message);
+        public void displayException(Exception exception, String message);
         public void loginSuccessful(User user, AuthToken authToken);
     }
 
     public void initiateLogin(String username, String password) {
         String validationMessage = validateLogin(username, password);
         if (validationMessage == null) {
-            view.displayInfoMessage("Logging in...");
+            view.displayMessage("Logging in...");
             UserService service = new UserService();
             service.login(username, password, this);
         }

@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.LoginTask;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -32,14 +31,14 @@ public class LoginHandler extends Handler {
             Cache.getInstance().setCurrUser(loggedInUser);
             Cache.getInstance().setCurrUserAuthToken(authToken);
 
-            observer.handleSuccess(loggedInUser, authToken);
+            observer.handleLoginSuccess(loggedInUser, authToken);
 
         } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
             String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
-            observer.handleFailure("Failed to login:" + message);
+            observer.handleLoginFailure("Failed to login:" + message);
         } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
-            observer.handleException(ex);
+            observer.handleException(ex, "Failed to login due to exception: ");
         }
     }
 }

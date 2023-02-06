@@ -89,7 +89,7 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
         }
 
         @Override
-        public void displayException(Exception exception, String message) {
+        public void handleException(Exception exception, String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
             view.displayMessage(message + exception.getMessage());

@@ -15,7 +15,6 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.IsFollowerHandler;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowersService {
@@ -24,7 +23,7 @@ public class FollowersService {
 
         void displayError(String message);
 
-        void displayException(Exception exception, String message);
+        void handleException(Exception exception, String message);
 
         void addFollowers(List<User> followers, boolean hasMorePages);
 
@@ -69,7 +68,7 @@ public class FollowersService {
                 observer.displayError("Failed to get followers: " + message);
             } else if (msg.getData().containsKey(GetFollowersTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
-                observer.displayException(ex, "Failed to get followers because of exception: ");
+                observer.handleException(ex, "Failed to get followers because of exception: ");
             }
         }
     }
