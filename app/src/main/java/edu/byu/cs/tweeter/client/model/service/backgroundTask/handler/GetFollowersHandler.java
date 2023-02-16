@@ -11,6 +11,7 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetFollowersHandler extends Handler {
@@ -24,10 +25,9 @@ public class GetFollowersHandler extends Handler {
     @Override
     public void handleMessage(@NonNull Message msg) {
 
-
         boolean success = msg.getData().getBoolean(GetFollowersTask.SUCCESS_KEY);
         if (success) {
-            List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.FOLLOWERS_KEY);
+            List<User> followers = (List<User>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
             boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
             observer.addFollowers(followers, hasMorePages);
         } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {

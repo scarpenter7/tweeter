@@ -24,10 +24,9 @@ public class GetFollowingHandler extends Handler {
     @Override
     public void handleMessage(@NonNull Message msg) {
 
-
         boolean success = msg.getData().getBoolean(GetFollowingTask.SUCCESS_KEY);
         if (success) {
-            List<User> followees = (List<User>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
+            List<User> followees = (List<User>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);// TODO about this warning message
             boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
             observer.addFollowees(followees, hasMorePages);
         } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
