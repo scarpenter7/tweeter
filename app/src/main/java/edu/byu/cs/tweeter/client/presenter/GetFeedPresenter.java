@@ -3,8 +3,9 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FeedService;
-import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -76,30 +77,30 @@ public class GetFeedPresenter implements UserService.GetUserObserver {
         this.hasMorePages = hasMorePages;
     }
 
-    public class GetFeedObserver implements FeedService.Observer {
+    public class GetFeedObserver implements ServiceObserver {
+
         @Override
-        public void displayError(String message) {
+        public void handleError(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
             view.displayMessage(message);
         }
 
         @Override
-        public void displayException(Exception exception) {
+        public void handleException(String messsage) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayMessage("Failed to get feed because of exception: " + exception.getMessage());
+            view.displayMessage(messsage);
         }
 
         @Override
-        public void addItems(List<Status> statuses, boolean hasMorePages) {
+        public void handleSuccess(HandlerData handlerData) {
+            List<Status> statuses = handlerData.getStatuses();
             isLoading = false;
             view.setLoadingFooter(isLoading);
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-            setHasMorePages(hasMorePages);
+            setHasMorePages(handlerData.hasMorePages());
             view.addMoreItems(statuses);
         }
     }
-
-
 }

@@ -1,13 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -19,26 +11,14 @@ import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFeedTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFeedHandler;
-import edu.byu.cs.tweeter.client.presenter.GetFeedPresenter;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedService {
 
-    public interface Observer {
-
-        void displayError(String message);
-
-        void displayException(Exception exception);
-
-        void addItems(List<Status> statuses, boolean hasMorePages);
-    }
-
-    public void loadMoreItems(User user, int pageSize, Status lastStatus, Observer observer) {
+    public void loadMoreItems(User user, int pageSize, Status lastStatus, ServiceObserver observer) {
         GetFeedTask getFeedTask = new GetFeedTask(Cache.getInstance().getCurrUserAuthToken(),
                 user, pageSize, lastStatus, new GetFeedHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();

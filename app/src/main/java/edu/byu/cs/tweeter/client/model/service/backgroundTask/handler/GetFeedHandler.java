@@ -1,39 +1,39 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.Status;
 
-public class GetFeedHandler extends Handler {
-    private FeedService.Observer observer;
-    public GetFeedHandler(FeedService.Observer observer) {
-        super(Looper.getMainLooper());
-        this.observer = observer;
+public class GetFeedHandler extends TaskHandler {
+
+    public GetFeedHandler(ServiceObserver observer) {
+        super(observer);
     }
 
     @Override
-    public void handleMessage(@NonNull Message msg) {
+    protected void handleSuccess(Message msg) {
+        List<Status> statuses = (List<Status>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
+        boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
+        HandlerData handlerData = new HandlerData();
+        handlerData.setStatuses(statuses);
+        handlerData.setHasMorePages(hasMorePages);
 
-        boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
-        if (success) {
-            List<Status> statuses = (List<Status>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
-            boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-            observer.addItems(statuses, hasMorePages);
-        } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
-            String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-            observer.displayError("Failed to get feed: " + message);
-        } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
-            Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-            observer.displayException(ex);
-        }
+        observer.handleSuccess(handlerData);
+    }
+
+    @Override
+    protected void handleError(Message msg) {
+        observer.handleError("Failed to get feed: " + getErrorInfoMessage(msg));
+    }
+
+    @Override
+    protected void handleException(Message msg) {
+        Exception ex = getException(msg);
+        observer.handleException("Failed to get feed due to exception: " + ex.getMessage());
     }
 }
