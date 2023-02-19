@@ -15,6 +15,7 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersCountT
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowersCountHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowersHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.IsFollowerHandler;
@@ -37,7 +38,7 @@ public class FollowersService {
         void getFollowersCount(int count);
     }
 
-    public void loadMoreItems(User user, int pageSize, User lastFollower, Observer observer) {
+    public void loadMoreItems(User user, int pageSize, User lastFollower, ServiceObserver observer) {
         GetFollowersTask getFollowersTask = new GetFollowersTask(Cache.getInstance().getCurrUserAuthToken(),
                 user, pageSize, lastFollower, new GetFollowersHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();

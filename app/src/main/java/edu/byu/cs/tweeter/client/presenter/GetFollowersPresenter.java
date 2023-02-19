@@ -5,6 +5,8 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.client.view.main.followers.FollowersFragment;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -77,9 +79,17 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
         userService.getUser(username, this);
     }
 
-    private class GetFollowersObserver implements FollowersService.Observer {
+    private class GetFollowersObserver implements ServiceObserver {
 
-        private boolean hasMorePages;
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            List<User> followers = handlerData.getPeople();
+            isLoading = false;
+            view.setLoadingFooter(isLoading);
+            lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
+            setHasMorePages(handlerData.hasMorePages());
+            view.addMoreItems(followers);
+        }
 
         @Override
         public void handleError(String message) {
@@ -89,34 +99,10 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
         }
 
         @Override
-        public void handleException(Exception exception, String message) {
+        public void handleException(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayMessage(message + exception.getMessage());
-        }
-
-        @Override
-        public void addFollowers(List<User> followers, boolean hasMorePages) {
-            isLoading = false;
-            view.setLoadingFooter(isLoading);
-            lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
-            setHasMorePages(hasMorePages);
-            view.addMoreItems(followers);
-        }
-
-        @Override
-        public void isFollower() {
-            // don't use
-        }
-
-        @Override
-        public void isNotFollower() {
-            // don't use
-        }
-
-        @Override
-        public void getFollowersCount(int count) {
-            // don't use
+            view.displayMessage(message);
         }
     }
 }
