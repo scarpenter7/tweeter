@@ -1,14 +1,11 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.view.main.story.StoryFragment;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -59,7 +56,7 @@ public class GetStoryPresenter implements UserService.GetUserObserver {
         if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
             isLoading = true;
             view.setLoadingFooter(isLoading);
-            storyService.loadMoreItems(user, PAGE_SIZE, lastStatus, new GetStoryPresenter.GetStoriesObserver());
+            storyService.loadMoreItems(user, PAGE_SIZE, lastStatus, new GetStoryObserver());
         }
     }
 
@@ -79,7 +76,17 @@ public class GetStoryPresenter implements UserService.GetUserObserver {
         return isLoading;
     }
 
-    public class GetStoriesObserver implements StoryService.Observer {
+    public class GetStoryObserver implements ServiceObserver {
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            List<Status> statuses = handlerData.getStatuses();
+            isLoading = false;
+            view.setLoadingFooter(isLoading);
+            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
+            setHasMorePages(handlerData.hasMorePages());
+            view.addMoreItems(statuses);
+        }
+
         @Override
         public void handleError(String message) {
             isLoading = false;
@@ -88,24 +95,10 @@ public class GetStoryPresenter implements UserService.GetUserObserver {
         }
 
         @Override
-        public void handleException(Exception exception, String message) {
+        public void handleException(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayMessage(message + exception.getMessage());
-        }
-
-        @Override
-        public void addStories(List<Status> statuses, boolean hasMorePages) {
-            isLoading = false;
-            view.setLoadingFooter(isLoading);
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-            setHasMorePages(hasMorePages);
-            view.addMoreItems(statuses);
-        }
-
-        @Override
-        public void postStatus() {
-
+            view.displayMessage(message);
         }
     }
 

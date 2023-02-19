@@ -202,8 +202,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     @Override
-    public void displayException(Exception exception, String message) {
-        Toast.makeText(MainActivity.this, message + exception.getMessage(), Toast.LENGTH_LONG).show();
+    public void displayException(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override

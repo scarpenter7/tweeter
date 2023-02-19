@@ -7,12 +7,14 @@ import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
 import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainActivityPresenter
-        implements FollowersService.Observer, FollowService.Observer, UserService.LoginObserver, StoryService.Observer {
+        implements FollowersService.Observer, FollowService.Observer, UserService.LoginObserver {
 
     private MainActivityPresenter.View view;
     private FollowersService followersService;
@@ -45,17 +47,7 @@ public class MainActivityPresenter
 
     @Override
     public void handleException(Exception exception, String message) {
-        view.displayException(exception, message);
-    }
-
-    @Override
-    public void addStories(List<Status> statuses, boolean hasMorePages) {
-        // do not use
-    }
-
-    @Override
-    public void postStatus() {
-        view.postStatus();
+        view.displayException(message);
     }
 
 
@@ -123,7 +115,7 @@ public class MainActivityPresenter
     public interface View {
         void setLoadingFooter(boolean value);
         void displayErrorMessage(String message);
-        void displayException(Exception exception, String message);
+        void displayException(String message);
         void displayFollowErrorMessage(String message);
         void displayFollowException(Exception exception, String message);
         void isFollower();
@@ -155,7 +147,7 @@ public class MainActivityPresenter
     }
 
     public void postStatus(Status newStatus) {
-        storyService.postStatus(newStatus, this);
+        storyService.postStatus(newStatus, new PostStatusObserver());
     }
 
     public void getFollowersCount(User selectedUser) {
@@ -166,4 +158,20 @@ public class MainActivityPresenter
         followService.getFolloweesCount(selectedUser, this);
     }
 
+    public class PostStatusObserver implements ServiceObserver {
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            view.postStatus();
+        }
+
+        @Override
+        public void handleError(String message) {
+            view.displayErrorMessage(message);
+        }
+
+        @Override
+        public void handleException(String message) {
+            view.displayException(message);
+        }
+    }
 }
