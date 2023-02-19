@@ -11,30 +11,34 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFollowingHandler extends Handler {
+public class GetFollowingHandler extends TaskHandler {
 
-    private FollowService.Observer observer;
-    public GetFollowingHandler(FollowService.Observer observer) {
-        super(Looper.getMainLooper());
-        this.observer = observer;
+    public GetFollowingHandler(ServiceObserver observer) {
+        super(observer);
     }
 
     @Override
-    public void handleMessage(@NonNull Message msg) {
+    protected void handleSuccess(Message msg) {
+        List<User> followees = (List<User>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);// TODO about this warning message
+        boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
+        HandlerData hd = new HandlerData();
+        hd.setPeople(followees);
+        hd.setHasMorePages(hasMorePages);
+        observer.handleSuccess(hd);
+    }
 
-        boolean success = msg.getData().getBoolean(GetFollowingTask.SUCCESS_KEY);
-        if (success) {
-            List<User> followees = (List<User>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);// TODO about this warning message
-            boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
-            observer.addFollowees(followees, hasMorePages);
-        } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
-            String message = msg.getData().getString(GetFollowingTask.MESSAGE_KEY);
-            observer.handleError("Failed to get following: " + message);
-        } else if (msg.getData().containsKey(GetFollowingTask.EXCEPTION_KEY)) {
-            Exception ex = (Exception) msg.getData().getSerializable(GetFollowingTask.EXCEPTION_KEY);
-            observer.handleException(ex, "Failed to get following because of exception: ");
-        }
+    @Override
+    protected void handleError(Message msg) {
+        String message = getErrorInfoMessage(msg);
+        observer.handleError("Failed to get following: " + message);
+    }
+
+    @Override
+    protected void handleException(Message msg) {
+        Exception ex = getException(msg);
+        observer.handleException("Failed to get following because of exception: " + ex.getMessage());
     }
 }

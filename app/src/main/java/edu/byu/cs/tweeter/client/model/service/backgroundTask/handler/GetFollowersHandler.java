@@ -1,16 +1,11 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 
-import androidx.annotation.NonNull;
+import android.os.Message;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.FollowersService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -23,7 +18,7 @@ public class GetFollowersHandler extends TaskHandler {
     @Override
     protected void handleSuccess(Message msg) {
         List<User> followers = (List<User>) msg.getData().getSerializable(PagedTask.ITEMS_KEY);
-        boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
+        boolean hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
         HandlerData hd = new HandlerData();
         hd.setPeople(followers);
         hd.setHasMorePages(hasMorePages);
@@ -32,13 +27,13 @@ public class GetFollowersHandler extends TaskHandler {
 
     @Override
     protected void handleError(Message msg) {
-        String message = msg.getData().getString(GetFollowersTask.MESSAGE_KEY);
+        String message = getErrorInfoMessage(msg);
         observer.handleError("Failed to get followers: " + message);
     }
 
     @Override
     protected void handleException(Message msg) {
-        Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
+        Exception ex = getException(msg);
         observer.handleException("Failed to get followers because of exception: " + ex.getMessage());
     }
 }

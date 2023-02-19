@@ -4,6 +4,8 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetFollowingPresenter implements UserService.GetUserObserver {
@@ -76,22 +78,16 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
 
     }
 
-    private class GetFollowingObserver implements FollowService.Observer {
-
-        private boolean hasMorePages;
+    private class GetFollowingObserver implements ServiceObserver {
 
         @Override
-        public void displayFollowError(String message) {
+        public void handleSuccess(HandlerData handlerData) {
+            List<User> followees = handlerData.getPeople();
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayError(message);
-        }
-
-        @Override
-        public void displayFollowException(Exception exception, String message) {
-            isLoading = false;
-            view.setLoadingFooter(isLoading);
-            view.displayException(message + exception.getMessage());
+            lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
+            setHasMorePages(handlerData.hasMorePages());
+            view.addMoreItems(followees);
         }
 
         @Override
@@ -102,34 +98,10 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
         }
 
         @Override
-        public void handleException(Exception exception, String message) {
+        public void handleException(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayException(message + exception.getMessage());
-        }
-
-        @Override
-        public void addFollowees(List<User> followees, boolean hasMorePages) {
-            isLoading = false;
-            view.setLoadingFooter(isLoading);
-            lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
-            setHasMorePages(hasMorePages);
-            view.addMoreItems(followees);
-        }
-
-        @Override
-        public void follow() {
-            // don't use
-        }
-
-        @Override
-        public void unfollow() {
-            // don't use
-        }
-
-        @Override
-        public void getFolloweesCount(int count) {
-            // don't use
+            view.displayException(message);
         }
     }
 }
