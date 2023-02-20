@@ -8,6 +8,17 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class HandlerData {
     private List<Status> statuses;
     private boolean hasMorePages;
+
+    private boolean isFollower;
+
+    public boolean isFollower() {
+        return isFollower;
+    }
+
+    public void setIsFollower(boolean follower) {
+        isFollower = follower;
+    }
+
     private User user;
     private List<User> people;
     private int count;

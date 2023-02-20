@@ -27,6 +27,9 @@ public class UserService {
         void handleLoginFailure(String message);
         void handleLogoutSuccess();
         void handleLogoutFailure(String message);
+
+        void handleError(String message);
+
         void handleException(Exception exception, String message);
     }
 
