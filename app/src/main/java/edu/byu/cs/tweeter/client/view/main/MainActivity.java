@@ -213,8 +213,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     @Override
-    public void displayFollowException(Exception exception, String message) {
-        Toast.makeText(MainActivity.this, message + exception.getMessage(), Toast.LENGTH_LONG).show();
+    public void displayFollowException(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
         followButton.setEnabled(true);
     }
 

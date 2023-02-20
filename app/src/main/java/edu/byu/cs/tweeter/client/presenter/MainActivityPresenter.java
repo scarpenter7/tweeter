@@ -13,8 +13,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainActivityPresenter
-        implements FollowersService.Observer, FollowService.Observer, UserService.LoginObserver {
+public class MainActivityPresenter implements FollowersService.Observer, UserService.LoginObserver {
 
     private MainActivityPresenter.View view;
     private FollowersService followersService;
@@ -31,16 +30,6 @@ public class MainActivityPresenter
     }
 
     @Override
-    public void displayFollowError(String message) {
-        view.displayFollowErrorMessage(message);
-    }
-
-    @Override
-    public void displayFollowException(Exception exception, String message) {
-        view.displayFollowException(exception, message);
-    }
-
-    @Override
     public void handleError(String message) {
         view.displayErrorMessage(message);
     }
@@ -48,27 +37,6 @@ public class MainActivityPresenter
     @Override
     public void handleException(Exception exception, String message) {
         view.displayException(message);
-    }
-
-
-    @Override
-    public void addFollowees(List<User> followees, boolean hasMorePages) {
-        // do nothing
-    }
-
-    @Override
-    public void follow() {
-        view.follow();
-    }
-
-    @Override
-    public void unfollow() {
-        view.unfollow();
-    }
-
-    @Override
-    public void getFolloweesCount(int count) {
-        view.getFolloweesCount(count);
     }
 
 
@@ -117,7 +85,7 @@ public class MainActivityPresenter
         void displayErrorMessage(String message);
         void displayException(String message);
         void displayFollowErrorMessage(String message);
-        void displayFollowException(Exception exception, String message);
+        void displayFollowException(String message);
         void isFollower();
         void isNotFollower();
         void follow();
@@ -134,10 +102,10 @@ public class MainActivityPresenter
     }
 
     public void follow(User user) {
-        followService.follow(user, this);
+        followService.follow(user, new FollowObserver());
     }
     public void unfollow(User selectedUser) {
-        followService.unfollow(selectedUser, this);
+        followService.unfollow(selectedUser, new UnfollowObserver());
     }
 
     public void logout() {
@@ -155,13 +123,67 @@ public class MainActivityPresenter
     }
 
     public void getFolloweesCount(User selectedUser) {
-        followService.getFolloweesCount(selectedUser, this);
+        followService.getFolloweesCount(selectedUser, new GetFollowerCountObserver());
     }
 
     public class PostStatusObserver implements ServiceObserver {
         @Override
         public void handleSuccess(HandlerData handlerData) {
             view.postStatus();
+        }
+
+        @Override
+        public void handleError(String message) {
+            view.displayErrorMessage(message);
+        }
+
+        @Override
+        public void handleException(String message) {
+            view.displayException(message);
+        }
+    }
+
+    public class FollowObserver implements ServiceObserver {
+
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            view.follow();
+        }
+
+        @Override
+        public void handleError(String message) {
+            view.displayFollowErrorMessage(message);
+        }
+
+        @Override
+        public void handleException(String message) {
+            view.displayFollowException(message);
+        }
+    }
+
+    public class UnfollowObserver implements ServiceObserver {
+
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            view.unfollow();
+        }
+
+        @Override
+        public void handleError(String message) {
+            view.displayFollowErrorMessage(message);
+        }
+
+        @Override
+        public void handleException(String message) {
+            view.displayFollowException(message);
+        }
+    } // TODO remove code dup here with Follow Observer
+
+    public class GetFollowerCountObserver implements ServiceObserver {
+
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            view.getFolloweesCount(handlerData.getCount());
         }
 
         @Override
