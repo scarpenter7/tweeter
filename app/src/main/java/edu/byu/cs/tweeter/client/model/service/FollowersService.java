@@ -52,7 +52,7 @@ public class FollowersService {
         executor.execute(isFollowerTask);
     }
 
-    public void getFollowersCount(User selectedUser, Observer observer) {
+    public void getFollowersCount(User selectedUser, ServiceObserver observer) {
         GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
                 selectedUser, new GetFollowersCountHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();

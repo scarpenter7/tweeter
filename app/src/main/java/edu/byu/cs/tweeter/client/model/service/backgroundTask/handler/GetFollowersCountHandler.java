@@ -1,33 +1,33 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 
-import androidx.annotation.NonNull;
 
-import edu.byu.cs.tweeter.client.model.service.FollowersService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersCountTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 
-public class GetFollowersCountHandler extends Handler {
-    private FollowersService.Observer observer;
-    public GetFollowersCountHandler(FollowersService.Observer observer) {
-        super(Looper.getMainLooper());
-        this.observer = observer;
+public class GetFollowersCountHandler extends TaskHandler {
+    public GetFollowersCountHandler(ServiceObserver observer) {
+        super(observer);
     }
 
     @Override
-    public void handleMessage(@NonNull Message msg) {
-        boolean success = msg.getData().getBoolean(GetFollowersCountTask.SUCCESS_KEY);
-        if (success) {
-            int count = msg.getData().getInt(GetFollowersCountTask.COUNT_KEY);
-            observer.getFollowersCount(count);
-        } else if (msg.getData().containsKey(GetFollowersCountTask.MESSAGE_KEY)) {
-            String message = msg.getData().getString(GetFollowersCountTask.MESSAGE_KEY);
-            observer.handleError("Failed to get followers count: " + message);
-        } else if (msg.getData().containsKey(GetFollowersCountTask.EXCEPTION_KEY)) {
-            Exception ex = (Exception) msg.getData().getSerializable(GetFollowersCountTask.EXCEPTION_KEY);
-            observer.handleException(ex, "Failed to get followers count because of exception: ");
-        }
+    protected void handleSuccess(Message msg) {
+        int count = msg.getData().getInt(GetFollowersCountTask.COUNT_KEY);
+        HandlerData hd = new HandlerData();
+        hd.setCount(count);
+        observer.handleSuccess(hd);
+    }
+
+    @Override
+    protected void handleError(Message msg) {
+        String message = getErrorInfoMessage(msg);
+        observer.handleError("Failed to get followers count: " + message);
+    }
+
+    @Override
+    protected void handleException(Message msg) {
+        Exception exception = getException(msg);
+        observer.handleException("Failed to get followers count due to exception: " + exception.getMessage());
     }
 }

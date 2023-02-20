@@ -119,11 +119,11 @@ public class MainActivityPresenter implements FollowersService.Observer, UserSer
     }
 
     public void getFollowersCount(User selectedUser) {
-        followersService.getFollowersCount(selectedUser, this);
+        followersService.getFollowersCount(selectedUser, new GetFollowersCountObserver());
     }
 
     public void getFolloweesCount(User selectedUser) {
-        followService.getFolloweesCount(selectedUser, new GetFollowerCountObserver());
+        followService.getFolloweesCount(selectedUser, new GetFolloweesCountObserver());
     }
 
     public class PostStatusObserver implements ServiceObserver {
@@ -179,11 +179,28 @@ public class MainActivityPresenter implements FollowersService.Observer, UserSer
         }
     } // TODO remove code dup here with Follow Observer
 
-    public class GetFollowerCountObserver implements ServiceObserver {
+    public class GetFolloweesCountObserver implements ServiceObserver {
 
         @Override
         public void handleSuccess(HandlerData handlerData) {
             view.getFolloweesCount(handlerData.getCount());
+        }
+
+        @Override
+        public void handleError(String message) {
+            view.displayErrorMessage(message);
+        }
+
+        @Override
+        public void handleException(String message) {
+            view.displayException(message);
+        }
+    }
+    public class GetFollowersCountObserver implements ServiceObserver {
+
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            view.getFollowersCount(handlerData.getCount());
         }
 
         @Override
