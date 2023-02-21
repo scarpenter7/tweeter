@@ -4,13 +4,13 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.GetUserObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFollowingPresenter implements UserService.GetUserObserver {
+public class GetFollowingPresenter extends GetUserObserver<User> {
     private static final int PAGE_SIZE = 10;
-    private View view;
     private FollowService followService;
 
     private UserService userService;
@@ -18,37 +18,8 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    @Override
-    public void handleSuccess(User user) {
-        view.getUserSuccessful(user);
-    }
-
-    @Override
-    public void handleFailure(String message) {
-        view.displayError(message);
-    }
-
-    @Override
-    public void handleException(Exception exception) {
-        view.displayInfoMessage(exception.getMessage());
-    }
-
-
-    public interface View {
-        void setLoadingFooter(boolean value);
-        void displayException(String message);
-
-        void addMoreItems(List<User> followees);
-
-        void getUserSuccessful(User user);
-
-        void displayError(String message);
-
-        void displayInfoMessage(String message);
-    }
-
-    public GetFollowingPresenter(View view) {
-        this.view = view;
+    public GetFollowingPresenter(PagedView<User> view) {
+        super(view);
         this.followService = new FollowService();
         this.userService = new UserService();
     }
@@ -94,14 +65,14 @@ public class GetFollowingPresenter implements UserService.GetUserObserver {
         public void handleError(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayError(message);
+            view.displayErrorMessage(message);
         }
 
         @Override
         public void handleException(String message) {
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            view.displayException(message);
+            view.setErrorView(message);
         }
     }
 }

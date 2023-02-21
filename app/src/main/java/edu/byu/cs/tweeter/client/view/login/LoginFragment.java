@@ -82,8 +82,8 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
     }
 
     @Override
-    public void displayException(Exception exception, String message) {
-        loginToast = Toast.makeText(getContext(), message + exception.getMessage(), Toast.LENGTH_LONG);
+    public void displayException(String message) {
+        loginToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
         loginToast.show();
     }
 

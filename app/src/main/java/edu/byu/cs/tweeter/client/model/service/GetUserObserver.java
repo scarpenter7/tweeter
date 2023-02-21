@@ -1,13 +1,13 @@
 package edu.byu.cs.tweeter.client.model.service;
 
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
-import edu.byu.cs.tweeter.client.presenter.UserView;
+import edu.byu.cs.tweeter.client.presenter.PagedView;
 
-public class GetUserObserver implements ServiceObserver {
+public class GetUserObserver<T> implements ServiceObserver {
 
-    protected UserView view;
+    protected PagedView<T> view;
 
-    public GetUserObserver(UserView view) {
+    public GetUserObserver(PagedView<T> view) {
         this.view = view;
     }
 

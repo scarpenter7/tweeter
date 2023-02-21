@@ -5,13 +5,12 @@ import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
 import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainActivityPresenter implements UserService.LoginObserver {
+public class MainActivityPresenter {
 
     private MainActivityPresenter.View view;
     private FollowersService followersService;
@@ -25,36 +24,6 @@ public class MainActivityPresenter implements UserService.LoginObserver {
         this.followService = new FollowService();
         this.userService = new UserService();
         this.storyService = new StoryService();
-    }
-
-    @Override
-    public void handleError(String message) {
-        view.displayErrorMessage(message);
-    }
-
-    @Override
-    public void handleException(Exception exception, String message) {
-        view.displayException(message);
-    }
-
-    @Override
-    public void handleLoginSuccess(User user, AuthToken authToken) {
-        // do not use
-    }
-
-    @Override
-    public void handleLoginFailure(String message) {
-        // do not use
-    }
-
-    @Override
-    public void handleLogoutSuccess() {
-        view.logout();
-    }
-
-    @Override
-    public void handleLogoutFailure(String message) {
-        handleError(message);
     }
 
     public interface View {
@@ -85,7 +54,7 @@ public class MainActivityPresenter implements UserService.LoginObserver {
     }
 
     public void logout() {
-        userService.logout(this);
+        userService.logout(new LogoutObserver());
         //Clear user data (cached data).
         Cache.getInstance().clearCache();
     }
@@ -211,6 +180,24 @@ public class MainActivityPresenter implements UserService.LoginObserver {
         @Override
         public void handleException(String message) {
             view.displayException(message);
+        }
+    }
+
+    public class LogoutObserver implements ServiceObserver {
+
+        @Override
+        public void handleError(String message) {
+            view.displayErrorMessage(message);
+        }
+
+        @Override
+        public void handleException(String message) {
+            view.displayException(message);
+        }
+
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            view.logout();
         }
     }
 }

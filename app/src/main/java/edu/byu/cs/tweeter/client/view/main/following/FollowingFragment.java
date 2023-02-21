@@ -25,13 +25,16 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.presenter.GetFollowingPresenter;
+import edu.byu.cs.tweeter.client.presenter.PagedView;
+import edu.byu.cs.tweeter.client.presenter.UserView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the "Following" tab.
  */
-public class FollowingFragment extends Fragment implements GetFollowingPresenter.View {
+public class FollowingFragment extends Fragment implements PagedView<User> {
 
     private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
@@ -98,10 +101,6 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
         }
     }
 
-    @Override
-    public void displayException(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-    }
 
     @Override
     public void addMoreItems(List<User> followees) {
@@ -116,13 +115,20 @@ public class FollowingFragment extends Fragment implements GetFollowingPresenter
     }
 
     @Override
-    public void displayError(String message) {
+    public void displayMessage(String message) {
+        Toast t = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+        t.show();
+    }
+
+    @Override
+    public void displayErrorMessage(String message) {
         getUserToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
         getUserToast.show();
     }
 
     @Override
-    public void displayInfoMessage(String message) {
+    public void setErrorView(String message) {
+        // Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         errorView.setText(message);
     }
 

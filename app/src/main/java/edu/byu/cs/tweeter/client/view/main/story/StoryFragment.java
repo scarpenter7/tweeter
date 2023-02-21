@@ -35,6 +35,8 @@ import edu.byu.cs.tweeter.R;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.GetStoryPresenter;
+import edu.byu.cs.tweeter.client.presenter.PagedView;
+import edu.byu.cs.tweeter.client.presenter.UserView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -42,7 +44,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * Implements the "Story" tab.
  */
-public class StoryFragment extends Fragment implements GetStoryPresenter.View {
+public class StoryFragment extends Fragment implements PagedView<Status> {
     private static final String LOG_TAG = "StoryFragment";
     private static final String USER_KEY = "UserKey";
 
@@ -133,7 +135,7 @@ public class StoryFragment extends Fragment implements GetStoryPresenter.View {
     }
 
     @Override
-    public void displayInfoMessage(String message) {
+    public void setErrorView(String message) {
         errorView.setText(message);
     }
 

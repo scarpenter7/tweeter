@@ -2,18 +2,16 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.FollowersService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.GetUserObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
-import edu.byu.cs.tweeter.client.view.main.followers.FollowersFragment;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFollowersPresenter implements UserService.GetUserObserver {
+public class GetFollowersPresenter extends GetUserObserver<User> {
 
     private static final int PAGE_SIZE = 10;
-    private GetFollowersPresenter.View view;
     private FollowersService followersService;
     
     private UserService userService;
@@ -21,36 +19,8 @@ public class GetFollowersPresenter implements UserService.GetUserObserver {
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    @Override
-    public void handleSuccess(User user) {
-        view.getUserSuccessful(user);
-    }
-
-    @Override
-    public void handleFailure(String message) {
-        view.displayErrorMessage(message);
-    }
-
-    @Override
-    public void handleException(Exception exception) {
-        view.displayInfoMessage(exception.getMessage());
-    }
-
-
-    public interface View {
-        void setLoadingFooter(boolean value);
-        void displayMessage(String message);
-
-        void addMoreItems(List<User> followees);
-
-        void getUserSuccessful(User user);
-
-        void displayErrorMessage(String message);
-
-        void displayInfoMessage(String message);
-    }
-    public GetFollowersPresenter(View view) {
-        this.view = view;
+    public GetFollowersPresenter(PagedView<User> view) {
+        super(view);
         this.followersService = new FollowersService();
         this.userService = new UserService();
     }

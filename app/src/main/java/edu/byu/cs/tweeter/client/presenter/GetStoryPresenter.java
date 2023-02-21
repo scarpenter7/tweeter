@@ -2,52 +2,24 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.model.service.GetUserObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetStoryPresenter implements UserService.GetUserObserver {
+public class GetStoryPresenter extends GetUserObserver<Status> {
     private static final int PAGE_SIZE = 10;
-    private View view;
     private StoryService storyService;
-
     private UserService userService;
     private Status lastStatus;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    @Override
-    public void handleSuccess(User user) {
-        view.getUserSuccessful(user);
-    }
-
-    @Override
-    public void handleFailure(String message) {
-        view.displayErrorMessage(message);
-    }
-
-    @Override
-    public void handleException(Exception exception) {
-        view.displayInfoMessage(exception.getMessage());
-    }
-
-    public interface View {
-        void setLoadingFooter(boolean value);
-        void displayMessage(String message);
-
-        void addMoreItems(List<Status> statuses);
-
-        void getUserSuccessful(User user);
-
-        void displayErrorMessage(String message);
-
-        void displayInfoMessage(String message);
-    }
-    public GetStoryPresenter(View view) {
-        this.view = view;
+    public GetStoryPresenter(PagedView<Status> view) {
+        super(view);
         this.storyService = new StoryService();
         this.userService = new UserService();
     }
@@ -61,7 +33,7 @@ public class GetStoryPresenter implements UserService.GetUserObserver {
     }
 
     public void getUser(String username) {
-        userService.getUser(username, this);
+        userService.getUser(username, new GetUserObserver(view));
     }
     
     private void setHasMorePages(boolean hasMorePages) {

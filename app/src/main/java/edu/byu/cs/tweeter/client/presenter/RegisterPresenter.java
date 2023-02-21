@@ -1,38 +1,17 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Base64;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.RegisterTask;
-import edu.byu.cs.tweeter.client.view.login.RegisterFragment;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter implements UserService.RegisterObserver{
-    //check out this cool comment
+public class RegisterPresenter {
     View view;
     public RegisterPresenter(RegisterPresenter.View view) {
         this.view = view;
-    }
-    @Override
-    public void handleSuccess(User user, AuthToken authToken) {
-        view.registerSuccessful(user, authToken);
-    }
-
-    @Override
-    public void handleFailure(String message) {
-        view.displayErrorMessage(message);
-    }
-
-    @Override
-    public void handleException(Exception exception) {
-        view.displayInfoMessage(exception.getMessage());
     }
 
     public void initiateRegister(String firstName, String lastName, String username, String password,
@@ -41,7 +20,7 @@ public class RegisterPresenter implements UserService.RegisterObserver{
         if (validationMessage == null) {
             view.displayInfoMessage("Registering/Logging in...");
             UserService service = new UserService();
-            service.register(firstName, lastName, username, password, image, this);
+            service.register(firstName, lastName, username, password, image, new RegisterObserver());
         }
         else {
             view.displayErrorMessage(validationMessage);
@@ -79,5 +58,22 @@ public class RegisterPresenter implements UserService.RegisterObserver{
         return null;
     }
 
+    public class RegisterObserver implements ServiceObserver {
+        @Override
+        public void handleError(String message) {
+            view.displayErrorMessage(message);
+        }
 
+        @Override
+        public void handleException(String message) {
+            view.displayInfoMessage(message);
+        }
+
+        @Override
+        public void handleSuccess(HandlerData handlerData) {
+            User user = handlerData.getUser();
+            AuthToken authToken = handlerData.getAuthToken();
+            view.registerSuccessful(user, authToken);
+        }
+    }
 }
