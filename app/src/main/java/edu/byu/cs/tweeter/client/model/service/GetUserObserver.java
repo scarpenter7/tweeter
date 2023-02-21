@@ -1,7 +1,6 @@
-package edu.byu.cs.tweeter.client.model.service.backgroundTask;
+package edu.byu.cs.tweeter.client.model.service;
 
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
-import edu.byu.cs.tweeter.client.presenter.PresenterView;
 import edu.byu.cs.tweeter.client.presenter.UserView;
 
 public class GetUserObserver implements ServiceObserver {

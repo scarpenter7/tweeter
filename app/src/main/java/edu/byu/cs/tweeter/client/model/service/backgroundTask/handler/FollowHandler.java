@@ -1,14 +1,8 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 
-import androidx.annotation.NonNull;
-
-import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.FollowTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 
 public class FollowHandler extends TaskHandler {
 

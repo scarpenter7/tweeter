@@ -5,7 +5,7 @@ import android.os.Message;
 
 
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetUserHandler extends TaskHandler {

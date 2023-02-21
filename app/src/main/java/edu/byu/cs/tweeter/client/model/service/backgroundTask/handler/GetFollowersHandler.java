@@ -7,7 +7,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetFollowersHandler extends TaskHandler {

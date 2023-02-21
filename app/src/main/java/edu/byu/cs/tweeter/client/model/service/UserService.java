@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetUserTask;
@@ -16,43 +14,24 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetUserHan
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.LoginHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.LogoutHandler;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.RegisterHandler;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
+import edu.byu.cs.tweeter.client.presenter.MainActivityPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class UserService {
-
-    public interface LoginObserver {
-        void handleLoginSuccess(User user, AuthToken authToken);
-        void handleLoginFailure(String message);
-        void handleLogoutSuccess();
-        void handleLogoutFailure(String message);
-
-        void handleError(String message);
-
-        void handleException(Exception exception, String message);
-    }
-
-    public interface RegisterObserver {
-        void handleSuccess(User user, AuthToken authToken);
-        void handleFailure(String message);
-        void handleException(Exception exception);
-    }
-
-    public interface GetUserObserver {
+public class UserService extends Service {
+    /*public interface GetUserObserver {
         void handleSuccess(User user);
         void handleFailure(String message);
         void handleException(Exception exception);
-    }
+    }*/
 
-    public void login(String username, String password, LoginObserver observer) {
+    public void login(String username, String password, ServiceObserver observer) {
         LoginTask loginTask = new LoginTask(username, password, new LoginHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(loginTask);
+        executeTask(loginTask);
     }
 
     public void register(String firstName, String lastName, String username, String password,
-                         Bitmap image, RegisterObserver observer) {
+                         Bitmap image, ServiceObserver observer) {
         // Convert image to byte array.
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, bos);
@@ -65,22 +44,17 @@ public class UserService {
         RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password,
                 imageBytesBase64, new RegisterHandler(observer));
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(registerTask);
-
+        executeTask(registerTask);
     }
 
-    public void logout(LoginObserver observer) {
+    public void logout(MainActivityPresenter.LogoutObserver observer) {
         LogoutTask logoutTask = new LogoutTask(Cache.getInstance().getCurrUserAuthToken(), new LogoutHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(logoutTask);
-
+        executeTask(logoutTask);
     }
 
     public void getUser(String username, GetUserObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
                 username, new GetUserHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getUserTask);
+        executeTask(getUserTask);
     }
 }

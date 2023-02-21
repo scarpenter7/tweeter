@@ -1,17 +1,12 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.PagedTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.Status;
 
 public class GetStoryHandler extends TaskHandler {

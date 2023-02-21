@@ -4,7 +4,7 @@ import android.os.Message;
 
 
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowersCountTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
+import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 
 public class GetFollowersCountHandler extends TaskHandler {
     public GetFollowersCountHandler(ServiceObserver observer) {
