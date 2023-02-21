@@ -1,44 +1,43 @@
 package edu.byu.cs.tweeter.client.model.service.backgroundTask.handler;
 
-import android.os.Handler;
-import android.os.Looper;
+
 import android.os.Message;
 
-import androidx.annotation.NonNull;
-
 import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.LoginTask;
+import edu.byu.cs.tweeter.client.model.service.backgroundTask.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginHandler extends Handler {
+public class LoginHandler extends TaskHandler {
 
-    UserService.LoginObserver observer;
-    public LoginHandler(UserService.LoginObserver observer) {
-        super(Looper.getMainLooper());
-        this.observer = observer;
+    public LoginHandler(ServiceObserver observer) {
+        super(observer);
     }
 
     @Override
-    public void handleMessage(@NonNull Message msg) {
-        boolean success = msg.getData().getBoolean(LoginTask.SUCCESS_KEY);
-        if (success) {
-            User loggedInUser = (User) msg.getData().getSerializable(LoginTask.USER_KEY);
-            AuthToken authToken = (AuthToken) msg.getData().getSerializable(LoginTask.AUTH_TOKEN_KEY);
+    protected void handleSuccess(Message msg) {
+        User loggedInUser = (User) msg.getData().getSerializable(LoginTask.USER_KEY);
+        AuthToken authToken = (AuthToken) msg.getData().getSerializable(LoginTask.AUTH_TOKEN_KEY);
 
-            // Cache user session information
-            Cache.getInstance().setCurrUser(loggedInUser);
-            Cache.getInstance().setCurrUserAuthToken(authToken);
+        // Cache user session information
+        Cache.getInstance().setCurrUser(loggedInUser);
+        Cache.getInstance().setCurrUserAuthToken(authToken);
+        HandlerData hd = new HandlerData();
+        hd.setUser(loggedInUser);
+        hd.setAuthToken(authToken);
+        observer.handleSuccess(hd);
+        //observer.handleLoginSuccess(loggedInUser, authToken);
 
-            observer.handleLoginSuccess(loggedInUser, authToken);
+    }
 
-        } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
-            String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
-            observer.handleLoginFailure("Failed to login:" + message);
-        } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
-            Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
-            observer.handleException(ex, "Failed to login due to exception: ");
-        }
+    @Override
+    protected void handleError(String message) {
+        observer.handleError("Failed to login: " + message);
+    }
+
+    @Override
+    protected void handleException(Exception exception) {
+        observer.handleError("Failed to login due to exception: " + exception.getMessage());
     }
 }

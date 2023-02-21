@@ -19,14 +19,12 @@ public class IsFollowerHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        String message = getErrorInfoMessage(msg);
+    protected void handleError(String message) {
         observer.handleError("Failed to determine following relationship: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception exception = getException(msg);
+    protected void handleException(Exception exception) {
         observer.handleException("Failed to determine following relationship due to exception: " + exception.getMessage());
     }
 }

@@ -26,21 +26,23 @@ public abstract class TaskHandler extends Handler {
         if (success) {
             handleSuccess(msg);
         } else if (msg.getData().containsKey(BackgroundTask.MESSAGE_KEY)) {
-            handleError(msg);
+            String message = getErrorInfoMessage(msg);
+            handleError(message);
         } else if (msg.getData().containsKey(BackgroundTask.EXCEPTION_KEY)) {
-            handleException(msg);
+            Exception exception = getException(msg);
+            handleException(exception);
         }
     }
 
     protected abstract void handleSuccess(Message msg);
-    protected abstract void handleError(Message msg);
-    protected abstract void handleException(Message msg);
+    protected abstract void handleError(String message);
+    protected abstract void handleException(Exception exception);
 
-    protected String getErrorInfoMessage(Message msg) {
+    private String getErrorInfoMessage(Message msg) {
         return msg.getData().getString(BackgroundTask.MESSAGE_KEY);
     }
 
-    protected Exception getException(Message msg) {
+    private Exception getException(Message msg) {
         return (Exception) msg.getData().getSerializable(BackgroundTask.EXCEPTION_KEY);
     }
 

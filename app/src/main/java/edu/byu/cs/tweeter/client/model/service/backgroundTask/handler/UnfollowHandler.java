@@ -16,14 +16,12 @@ public class UnfollowHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        String message = getErrorInfoMessage(msg);
+    protected void handleError(String message) {
         observer.handleError("Failed to unfollow: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception exception = getException(msg);
+    protected void handleException(Exception exception) {
         observer.handleException("Failed to unfollow due to exception: " + exception.getMessage());
     }
 }

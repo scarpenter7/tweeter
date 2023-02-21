@@ -27,13 +27,12 @@ public class GetFeedHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        observer.handleError("Failed to get feed: " + getErrorInfoMessage(msg));
+    protected void handleError(String message) {
+        observer.handleError("Failed to get feed: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception ex = getException(msg);
-        observer.handleException("Failed to get feed due to exception: " + ex.getMessage());
+    protected void handleException(Exception exception) {
+        observer.handleException("Failed to get feed due to exception: " + exception.getMessage());
     }
 }

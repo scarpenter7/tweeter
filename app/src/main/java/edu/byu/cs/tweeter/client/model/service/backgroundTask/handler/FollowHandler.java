@@ -22,14 +22,12 @@ public class FollowHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        String message = getErrorInfoMessage(msg);
+    protected void handleError(String message) {
         observer.handleError("Failed to follow: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception exception = getException(msg);
+    protected void handleException(Exception exception) {
         observer.handleException("Failed to follow due to exception: " + exception.getMessage());
     }
 }

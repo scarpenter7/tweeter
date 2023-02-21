@@ -30,14 +30,12 @@ public class GetStoryHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        String message = getErrorInfoMessage(msg);
+    protected void handleError(String message) {
         observer.handleError("Failed to get story: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception ex = getException(msg);
-        observer.handleException("Failed to get story due to exception: " + ex.getMessage());
+    protected void handleException(Exception exception) {
+        observer.handleException("Failed to get story due to exception: " + exception.getMessage());
     }
 }

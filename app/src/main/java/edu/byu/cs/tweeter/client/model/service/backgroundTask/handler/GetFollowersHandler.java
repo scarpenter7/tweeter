@@ -26,14 +26,12 @@ public class GetFollowersHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        String message = getErrorInfoMessage(msg);
+    protected void handleError(String message) {
         observer.handleError("Failed to get followers: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception ex = getException(msg);
-        observer.handleException("Failed to get followers because of exception: " + ex.getMessage());
+    protected void handleException(Exception exception) {
+        observer.handleException("Failed to get followers because of exception: " + exception.getMessage());
     }
 }

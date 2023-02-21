@@ -20,14 +20,12 @@ public class GetFollowersCountHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        String message = getErrorInfoMessage(msg);
+    protected void handleError(String message) {
         observer.handleError("Failed to get followers count: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception exception = getException(msg);
+    protected void handleException(Exception exception) {
         observer.handleException("Failed to get followers count due to exception: " + exception.getMessage());
     }
 }

@@ -16,14 +16,12 @@ public class PostStatusHandler extends TaskHandler {
     }
 
     @Override
-    protected void handleError(Message msg) {
-        String message = getErrorInfoMessage(msg);
+    protected void handleError(String message) {
         observer.handleError("Failed to post status: " + message);
     }
 
     @Override
-    protected void handleException(Message msg) {
-        Exception ex = getException(msg);
-        observer.handleException("Failed to post status due to exception: " + ex.getMessage());
+    protected void handleException(Exception exception) {
+        observer.handleException("Failed to post status due to exception: " + exception.getMessage());
     }
 }
