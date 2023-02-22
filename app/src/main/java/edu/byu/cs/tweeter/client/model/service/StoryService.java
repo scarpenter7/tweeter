@@ -21,4 +21,5 @@ public class StoryService extends Service {
                 newStatus, new PostStatusHandler(observer));
         executeTask(statusTask);
     }
+
 }

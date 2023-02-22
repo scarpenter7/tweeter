@@ -11,41 +11,19 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetStoryPresenter extends GetUserObserver<Status> {
-    private static final int PAGE_SIZE = 10;
     private StoryService storyService;
-    private UserService userService;
-    private Status lastStatus;
-    private boolean hasMorePages;
-    private boolean isLoading = false;
 
     public GetStoryPresenter(PagedView<Status> view) {
         super(view);
         this.storyService = new StoryService();
-        this.userService = new UserService();
     }
 
     public void loadMoreItems(User user) {
         if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
             isLoading = true;
             view.setLoadingFooter(isLoading);
-            storyService.loadMoreItems(user, PAGE_SIZE, lastStatus, new GetStoryObserver());
+            storyService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetStoryObserver());
         }
-    }
-
-    public void getUser(String username) {
-        userService.getUser(username, new GetUserObserver(view));
-    }
-    
-    private void setHasMorePages(boolean hasMorePages) {
-        this.hasMorePages = hasMorePages;
-    }
-
-    public boolean hasMorePages() {
-        return hasMorePages;
-    }
-
-    public boolean isLoading() {
-        return isLoading;
     }
 
     public class GetStoryObserver implements ServiceObserver {
@@ -54,7 +32,7 @@ public class GetStoryPresenter extends GetUserObserver<Status> {
             List<Status> statuses = handlerData.getStatuses();
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
+            lastItem = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             setHasMorePages(handlerData.hasMorePages());
             view.addMoreItems(statuses);
         }

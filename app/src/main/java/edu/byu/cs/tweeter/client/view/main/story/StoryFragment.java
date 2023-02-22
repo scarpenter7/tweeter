@@ -36,7 +36,6 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.GetStoryPresenter;
 import edu.byu.cs.tweeter.client.presenter.PagedView;
-import edu.byu.cs.tweeter.client.presenter.UserView;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;

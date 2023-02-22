@@ -19,11 +19,6 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService extends Service {
-    /*public interface GetUserObserver {
-        void handleSuccess(User user);
-        void handleFailure(String message);
-        void handleException(Exception exception);
-    }*/
 
     public void login(String username, String password, ServiceObserver observer) {
         LoginTask loginTask = new LoginTask(username, password, new LoginHandler(observer));

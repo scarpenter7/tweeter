@@ -10,31 +10,19 @@ import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerDat
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetFollowersPresenter extends GetUserObserver<User> {
-
-    private static final int PAGE_SIZE = 10;
     private FollowersService followersService;
-    
-    private UserService userService;
-    private User lastFollower;
-    private boolean hasMorePages;
-    private boolean isLoading = false;
 
     public GetFollowersPresenter(PagedView<User> view) {
         super(view);
         this.followersService = new FollowersService();
-        this.userService = new UserService();
     }
 
     public void loadMoreItems(User user) {
         if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
             isLoading = true;
             view.setLoadingFooter(isLoading);
-            followersService.loadMoreItems(user, PAGE_SIZE, lastFollower, new GetFollowersPresenter.GetFollowersObserver());
+            followersService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetFollowersPresenter.GetFollowersObserver());
         }
-    }
-
-    public void setHasMorePages(boolean hasMorePages) {
-        this.hasMorePages = hasMorePages;
     }
 
     public boolean hasMorePages() {
@@ -45,10 +33,6 @@ public class GetFollowersPresenter extends GetUserObserver<User> {
         return isLoading;
     }
 
-    public void getUser(String username) {
-        userService.getUser(username, this);
-    }
-
     private class GetFollowersObserver implements ServiceObserver {
 
         @Override
@@ -56,7 +40,7 @@ public class GetFollowersPresenter extends GetUserObserver<User> {
             List<User> followers = handlerData.getPeople();
             isLoading = false;
             view.setLoadingFooter(isLoading);
-            lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
+            lastItem = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
             setHasMorePages(handlerData.hasMorePages());
             view.addMoreItems(followers);
         }
