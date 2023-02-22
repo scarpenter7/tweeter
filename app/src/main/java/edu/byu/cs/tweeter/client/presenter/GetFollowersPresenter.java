@@ -17,12 +17,9 @@ public class GetFollowersPresenter extends GetUserObserver<User> {
         this.followersService = new FollowersService();
     }
 
-    public void loadMoreItems(User user) {
-        if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-            isLoading = true;
-            view.setLoadingFooter(isLoading);
-            followersService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetFollowersPresenter.GetFollowersObserver());
-        }
+    @Override
+    protected void loadMore(User user) {
+        followersService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetFollowersObserver());
     }
 
     public boolean hasMorePages() {

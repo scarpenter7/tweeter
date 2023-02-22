@@ -18,12 +18,9 @@ public class GetFeedPresenter extends GetUserObserver<Status> {
         this.feedService = new FeedService();
     }
 
-    public void loadMoreItems(User user) {
-        if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-            isLoading = true;
-            view.setLoadingFooter(isLoading);
-            feedService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetFeedPresenter.GetFeedObserver());
-        }
+    @Override
+    protected void loadMore(User user) {
+        feedService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetFeedObserver());
     }
 
     public class GetFeedObserver implements ServiceObserver {

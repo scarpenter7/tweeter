@@ -18,12 +18,9 @@ public class GetStoryPresenter extends GetUserObserver<Status> {
         this.storyService = new StoryService();
     }
 
-    public void loadMoreItems(User user) {
-        if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-            isLoading = true;
-            view.setLoadingFooter(isLoading);
-            storyService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetStoryObserver());
-        }
+    @Override
+    protected void loadMore(User user) {
+        storyService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetStoryObserver());
     }
 
     public class GetStoryObserver implements ServiceObserver {

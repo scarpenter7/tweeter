@@ -17,12 +17,9 @@ public class GetFollowingPresenter extends GetUserObserver<User> {
         this.followService = new FollowService();
     }
 
-    public void loadMoreItems(User user) {
-        if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-            isLoading = true;
-            view.setLoadingFooter(isLoading);
-            followService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetFollowingObserver());
-        }
+    @Override
+    protected void loadMore(User user) {
+        followService.loadMoreItems(user, PAGE_SIZE, lastItem, new GetFollowingObserver());
     }
 
     private class GetFollowingObserver implements ServiceObserver {

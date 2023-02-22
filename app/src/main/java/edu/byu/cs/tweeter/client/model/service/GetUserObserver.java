@@ -1,9 +1,11 @@
 package edu.byu.cs.tweeter.client.model.service;
 
 import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.HandlerData;
+import edu.byu.cs.tweeter.client.presenter.GetFollowingPresenter;
 import edu.byu.cs.tweeter.client.presenter.PagedView;
+import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetUserObserver<T> implements ServiceObserver {
+public abstract class GetUserObserver<T> implements ServiceObserver {
     protected static final int PAGE_SIZE = 10;
     protected PagedView<T> view;
     protected UserService userService;
@@ -58,4 +60,14 @@ public class GetUserObserver<T> implements ServiceObserver {
     public boolean hasMorePages() {
         return hasMorePages;
     }
+
+    public void loadMoreItems(User user) {
+        if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
+            isLoading = true;
+            view.setLoadingFooter(isLoading);
+            loadMore(user);
+        }
+    }
+
+    protected abstract void loadMore(User user);
 }
