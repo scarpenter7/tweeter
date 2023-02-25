@@ -48,6 +48,4 @@ public class GetStoryPresenter extends GetUserObserver<Status> {
             view.displayMessage(message);
         }
     }
-
-
 }
