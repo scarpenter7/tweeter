@@ -23,12 +23,20 @@ public class MainActivityPresenter {
         this.followersService = new FollowersService();
         this.followService = new FollowService();
         this.userService = new UserService();
-        this.storyService = new StoryService();
+    }
+
+    public StoryService getStoryService() {
+        if (storyService ==null) {
+            storyService = new StoryService();
+        }
+
+        return storyService;
     }
 
     public interface View {
         void setLoadingFooter(boolean value);
         void displayErrorMessage(String message);
+        void displayInfoMessage(String message);
         void displayException(String message);
         void displayFollowErrorMessage(String message);
         void displayFollowException(String message);
@@ -60,7 +68,8 @@ public class MainActivityPresenter {
     }
 
     public void postStatus(Status newStatus) {
-        storyService.postStatus(newStatus, new PostStatusObserver());
+        view.displayInfoMessage("Posting Status...");
+        getStoryService().postStatus(newStatus, new PostStatusObserver());
     }
 
     public void getFollowersCount(User selectedUser) {
@@ -79,12 +88,12 @@ public class MainActivityPresenter {
 
         @Override
         public void handleError(String message) {
-            view.displayErrorMessage(message);
+            view.displayErrorMessage("Failed to post status: " + message);
         }
 
         @Override
         public void handleException(String message) {
-            view.displayException(message);
+            view.displayException("Failed to post status because of exception: " + message);
         }
     }
 

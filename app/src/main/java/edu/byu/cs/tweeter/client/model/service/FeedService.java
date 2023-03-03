@@ -41,7 +41,6 @@ public class FeedService extends Service {
                 containedUrls.add(word);
             }
         }
-
         return containedUrls;
     }
 

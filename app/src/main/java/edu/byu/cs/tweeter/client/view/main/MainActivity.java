@@ -155,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void onStatusPosted(String post) {
-        postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
-        postingToast.show();
+        //postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
+        //postingToast.show();
 
         try {
             Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), System.currentTimeMillis(),
@@ -198,6 +198,11 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void displayErrorMessage(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void displayInfoMessage(String message) {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
